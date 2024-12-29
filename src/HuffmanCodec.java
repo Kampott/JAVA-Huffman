@@ -11,7 +11,14 @@ public class HuffmanCodec {
         PriorityQueue<Node> weightQueue = buildWeightQueue(weightMap);
         Node root = buildHuffmanTree(weightQueue);
 
-        root.fillCodeMap("", this.codeMap);
+        if (weightMap.size() == 1) {
+            // Если в таблице частот только один символ, назначаем ему код "1"
+            for (Map.Entry<Byte, Integer> entry : weightMap.entrySet()) {
+                codeMap.put(entry.getKey(), "1");
+            }
+        } else {
+            root.fillCodeMap("", this.codeMap);
+        }
 
         String compressed = compressData(data);
         compressed = padZeroing(compressed);
