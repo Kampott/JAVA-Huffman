@@ -78,6 +78,8 @@ public class FileEngine {
         StringBuilder compressed = new StringBuilder();
         int initialLength = 0;
 
+
+
         try {
             FileInputStream fileInputStream = new FileInputStream(compressedFile);
 
@@ -99,7 +101,8 @@ public class FileEngine {
         }
 
         int additionalZerosNumber = getAdditionalZerosNumber(compressed.toString());
-
+        System.out.println("Additional zeros: " + additionalZerosNumber);
+        System.out.println("Compressed without padding: " + compressed.substring(8, compressed.length() - additionalZerosNumber));
         dataInfo.initialLength = initialLength;
         dataInfo.compressedData = compressed.substring(8, compressed.length() - additionalZerosNumber);
     };

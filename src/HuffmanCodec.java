@@ -12,13 +12,17 @@ public class HuffmanCodec {
         Node root = buildHuffmanTree(weightQueue);
 
         if (weightMap.size() == 1) {
-            // Если в таблице частот только один символ, назначаем ему код "1"
+            System.out.println("Single symbol detected: " + weightMap.keySet());
             for (Map.Entry<Byte, Integer> entry : weightMap.entrySet()) {
                 codeMap.put(entry.getKey(), "1");
             }
         } else {
             root.fillCodeMap("", this.codeMap);
         }
+
+        System.out.println("Code map: " + codeMap);
+
+
 
         String compressed = compressData(data);
         compressed = padZeroing(compressed);
@@ -30,20 +34,39 @@ public class HuffmanCodec {
         ArrayList<Byte> result = new ArrayList<>();
         StringBuilder current = new StringBuilder();
 
+        // Проверяем, если в recoveryMap только один элемент
+        if (recoveryMap.size() == 1) {
+            Byte singleSymbol = recoveryMap.values().iterator().next();
+            for (int i = 0; i < compressed.length(); i++) {
+                result.add(singleSymbol);
+            }
+            return convertListToArray(result);
+        }
+
+        System.out.println("Compressed data: " + compressed);
+        System.out.println("Recovery map: " + recoveryMap);
+
         for (int index = 0; index < compressed.length(); index++) {
             current.append(compressed.charAt(index));
-
             if (recoveryMap.containsKey(current.toString())) {
+                System.out.println("Matched code: " + current + " -> " + recoveryMap.get(current.toString()));
                 result.add(recoveryMap.get(current.toString()));
                 current.setLength(0);
             }
         }
 
+        if (current.length() > 0) {
+            System.out.println("Warning: leftover bits: " + current);
+        }
+
+
         return convertListToArray(result);
     }
 
+
     private String padZeroing(String compressed) {
         int delta = 8 - compressed.length() % 8;
+        if (delta == 8) delta = 0; // Чтобы избежать добавления полного байта
 
         for (int counter = 0; counter < delta; counter++) {
             compressed += "0";
@@ -51,6 +74,7 @@ public class HuffmanCodec {
 
         return String.format("%8s", Integer.toBinaryString(delta & 0xff)).replace(" ", "0") + compressed;
     }
+
 
     private Node buildHuffmanTree(PriorityQueue<Node> queue) {
         while (queue.size() > 1) {
